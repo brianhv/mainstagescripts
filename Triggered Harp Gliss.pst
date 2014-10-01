@@ -1,0 +1,100 @@
+/*
+    Written by Brian Victor
+    Based on script by Matthew J. Pool
+
+    This script creates triggered harp glissandos, mimicking the pedals of
+    an orchestral harp.
+*/
+
+var lengthOfGlissLabel = "Length Of Gliss";
+var delayBetweenLabel = "Delay Between Notes (ms)";
+
+var alterations = ['Flat', 'Natural', 'Sharp'];
+var pitches = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+
+function buildNaturalPitchesList() {
+    var result = [];
+    naturalsInOctave = [0, 2, 4, 5, 7, 9, 11];
+    for (var octave = 0; octave < 10; octave++) {
+        for (var noteIndex = 0; noteIndex < 7; noteIndex++) {
+            result.push(octave * 12 + naturalsInOctave[noteIndex]);
+        }
+    }
+    return result;
+}
+
+var stringPitches = buildNaturalPitchesList();
+
+function noteNameForPitch(pitch) {
+    switch (pitch % 12) {
+        case 0:
+            return "C";
+        case 2:
+            return "D";
+        case 4:
+            return "E";
+        case 5:
+            return "F";
+        case 7:
+            return "G";
+        case 9:
+            return "A";
+        case 11:
+            return "B";
+    }
+}
+
+function alteredPitch(pitch) {
+    return pitch - 1 + GetParameter(noteNameForPitch(pitch));
+}
+
+function HandleMIDI(event) {
+    if (event instanceof Note) {
+        var numberOfPitches = GetParameter(lengthOfGlissLabel);
+        var delayBetween = GetParameter(delayBetweenLabel);
+        var currentStringIndex = stringPitches.indexOf(event.pitch);
+        if (currentStringIndex == -1) return;
+
+        for (var i = 0; i < numberOfPitches; i++) {
+            event.pitch = alteredPitch(stringPitches[currentStringIndex]);
+            event.sendAfterMilliseconds(delayBetween * i);
+            currentStringIndex++;
+            if (currentStringIndex >= stringPitches.length) return;
+        }
+    }
+    else
+    {
+        event.send(); // It's not a note, so go ahead and send original event
+    }
+}
+
+//-----------------------------------------------------------------------------
+var PluginParameters = [];
+
+for (var i=0; i<pitches.length; i++) {
+    PluginParameters.push({
+        name:pitches[i],
+        type:"menu",
+        valueStrings: alterations,
+        numberOfSteps: 3,
+        minValue:0,
+        maxValue:2,
+        defaultValue:1
+    });
+}
+
+PluginParameters.push({name:lengthOfGlissLabel,
+    type:"lin",
+    minValue:1,
+    maxValue:50,
+    defaultValue: 20,
+    numberOfSteps: 49
+});
+
+PluginParameters.push({name:delayBetweenLabel,
+    type:"lin",
+    minValue:1,
+    maxValue:200,
+    defaultValue: 25,
+    numberOfSteps: 199
+});
