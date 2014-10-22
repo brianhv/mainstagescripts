@@ -16,7 +16,7 @@ Download the current [zip file](https://github.com/brianhv/mainstagescripts/arch
 Step 2: Install (optional)
 --------------------------
 
-Open the zip file you downloaded in step one and move the .pst file from it into `Music/Audio Music Apps/Plug-In Settings/Scripter` in your home directory. The Scripter directory may not exist yet; create it if it does.
+Open the zip file you downloaded in step one and move the .pst file from it into `Music/Audio Music Apps/Plug-In Settings/Scripter` in your home directory. The Scripter directory may not exist yet; create it if it doesn't.
 
 Installing is recommended if you'll be using the script more than once. It makes it easier to activate the script by adding the script to a menu.
 
